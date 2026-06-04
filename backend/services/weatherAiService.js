@@ -19,10 +19,14 @@ export async function callWeatherAi(path, params = {}) {
   })
 
   try {
-    const response = await getJson(url, {
-      Authorization: `Bearer ${env.weatherApiKey}`,
-      Accept: 'application/json',
-    })
+    const response = await getJson(
+      url,
+      {
+        Authorization: `Bearer ${env.weatherApiKey}`,
+        Accept: 'application/json',
+      },
+      { timeoutMs: env.weatherAiTimeoutMs },
+    )
 
     if (!response.ok) {
       const message = response.body.error || response.body.message || `Weather-AI returned ${response.status}`

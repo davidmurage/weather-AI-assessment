@@ -7,7 +7,7 @@ A React + Node.js dashboard that consumes the Weather-AI developer API through a
 
 - Search by city or latitude/longitude.
 - Backend geocoding proxy using OpenStreetMap Nominatim.
-- Weather-AI `/v1/forecast` integration with `ai=true`.
+- Weather-AI `/v1/forecast` integration for current, daily, and hourly weather.
 - Weather-AI `/v1/weather-geo` support for network location detection.
 - Weather-AI `/v1/usage` support for quota visibility when available.
 - Responsive React dashboard with loading and error states.
@@ -55,6 +55,9 @@ WEATHER_AI_API_KEY=wai_your_key_here
 WEATHER_AI_BASE_URL=https://api.weather-ai.co
 PORT=8080
 FRONTEND_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,https://weather-ai-assessment.vercel.app
+WEATHER_AI_TIMEOUT_MS=12000
+FALLBACK_WEATHER_TIMEOUT_MS=10000
+GEOCODING_TIMEOUT_MS=8000
 ```
 
 Run the backend:
@@ -97,6 +100,9 @@ WEATHER_AI_API_KEY=wai_your_key_here
 WEATHER_AI_BASE_URL=https://api.weather-ai.co
 PORT=8080
 FRONTEND_ORIGIN=https://weather-ai-assessment.vercel.app
+WEATHER_AI_TIMEOUT_MS=12000
+FALLBACK_WEATHER_TIMEOUT_MS=10000
+GEOCODING_TIMEOUT_MS=8000
 ```
 
 Frontend deployment variable:
@@ -122,7 +128,7 @@ FRONTEND_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,https://weather-ai-a
 
 ## API Routes
 
-- `GET /api/weather?lat=-1.2921&lon=36.8219&days=7&ai=true`
+- `GET /api/weather?lat=-1.2921&lon=36.8219&days=7&ai=false`
 - `GET /api/weather-geo?ip=auto&days=7&ai=true`
 - `GET /api/geocode?q=Nairobi`
 - `GET /api/usage`
