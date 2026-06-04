@@ -19,7 +19,14 @@ function DailyForecast({ daily }) {
             <p>{day?.condition || 'Awaiting data'}</p>
             <div className="forecast-meta">
               <small>Rain {formatPercent(day?.precipitationProbability)}</small>
+              <small>Total {day?.precipitationSum ?? '--'} mm</small>
               <small>Wind {formatSpeed(day?.windMax)}</small>
+              <small>
+                Sun{' '}
+                {day?.sunrise && day?.sunset
+                  ? `${new Date(day.sunrise).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })} / ${new Date(day.sunset).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}`
+                  : '--'}
+              </small>
             </div>
           </article>
         ))}

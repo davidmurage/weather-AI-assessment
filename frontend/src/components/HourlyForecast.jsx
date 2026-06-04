@@ -1,4 +1,4 @@
-import { formatPercent, formatTemp } from '../utils/weather'
+import { formatPercent, formatSpeed, formatTemp } from '../utils/weather'
 
 function HourlyForecast({ hourly }) {
   const items = hourly?.length ? hourly : Array.from({ length: 8 })
@@ -19,6 +19,10 @@ function HourlyForecast({ hourly }) {
             <div className="forecast-meta">
               <small>Rain {formatPercent(hour?.precipitationProbability)}</small>
               <small>Hum {formatPercent(hour?.humidity)}</small>
+              <small>Feels {formatTemp(hour?.feelsLike)}</small>
+              <small>Wind {formatSpeed(hour?.wind)}</small>
+              <small>Gust {formatSpeed(hour?.windGust)}</small>
+              <small>UV {hour?.uvIndex ?? '--'}</small>
             </div>
           </article>
         ))}
