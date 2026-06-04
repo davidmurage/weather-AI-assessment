@@ -37,7 +37,7 @@ Update `backend/.env`:
 WEATHER_AI_API_KEY=wai_your_key_here
 WEATHER_AI_BASE_URL=https://api.weather-ai.co
 PORT=8080
-FRONTEND_ORIGIN=http://localhost:5173
+FRONTEND_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,https://weather-ai-assessment.vercel.app
 ```
 
 Run the backend:
@@ -56,7 +56,13 @@ npm run dev
 
 Open the Vite URL, usually `http://localhost:5173`.
 
-For local development, Vite proxies `/api` requests to `http://localhost:8080`. Frontend API calls import `BASE_URL` from `frontend/src/config.jsx`.
+Frontend API calls import `BASE_URL` from `frontend/src/config.jsx`. The deployed backend URL currently configured there is:
+
+```txt
+https://weather-ai-assessment.onrender.com
+```
+
+For local-only development, you can set `VITE_API_BASE_URL=http://localhost:8080` in the frontend environment or change the fallback in `frontend/src/config.jsx`.
 
 ## Production Environment
 
@@ -65,21 +71,22 @@ Backend deployment variables:
 ```env
 WEATHER_AI_API_KEY=wai_your_key_here
 WEATHER_AI_BASE_URL=https://api.weather-ai.co
+PORT=8080
 FRONTEND_ORIGIN=https://weather-ai-assessment.vercel.app
 ```
 
 Frontend deployment variable:
 
 ```env
-VITE_API_BASE_URL=https://your-backend-domain.example
+VITE_API_BASE_URL=https://weather-ai-assessment.onrender.com
 ```
 
-Deploy the backend to Render or Railway, then deploy the frontend to Netlify or Vercel with the backend URL set as `VITE_API_BASE_URL`.
+Deploy the backend to Render, then deploy the frontend to Vercel with the backend URL set as `VITE_API_BASE_URL`.
 
 If you need multiple allowed frontend origins, separate them with commas:
 
 ```env
-FRONTEND_ORIGIN=http://localhost:5173,https://weather-ai-assessment.vercel.app
+FRONTEND_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,https://weather-ai-assessment.vercel.app
 ```
 
 ## API Routes
