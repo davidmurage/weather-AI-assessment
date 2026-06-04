@@ -63,6 +63,13 @@ Run the backend:
 npm run dev
 ```
 
+You can also start it from the project root:
+
+```bash
+cd backend
+npm start
+```
+
 ## Frontend Setup
 
 ```bash
@@ -99,6 +106,13 @@ VITE_API_BASE_URL=https://weather-ai-assessment.onrender.com
 ```
 
 Deploy the backend to Render, then deploy the frontend to Vercel with the backend URL set as `VITE_API_BASE_URL`.
+
+For Render, set the backend service root directory to `backend`, or use these commands:
+
+```bash
+Build Command: cd backend && npm install
+Start Command: cd backend && npm start
+```
 
 If you need multiple allowed frontend origins, separate them with commas:
 
