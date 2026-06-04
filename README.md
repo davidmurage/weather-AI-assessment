@@ -29,7 +29,7 @@ frontend/  React + Vite dashboard with reusable components and API services
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/weather-ai-assessment.git
+git clone [https://github.com/your-username/weather-ai-assessment.git](https://github.com/davidmurage/weather-AI-assessment.git)
 ```
 
 Navigate into the project root:
