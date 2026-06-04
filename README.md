@@ -24,6 +24,22 @@ frontend/  React + Vite dashboard with reusable components and API services
 - Node.js 18 or newer.
 - A Weather-AI API key from https://weather-ai.co/.
 
+## Getting Started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/weather-ai-assessment.git
+```
+
+Navigate into the project root:
+
+```bash
+cd weather-ai-assessment
+```
+
+Then install and run the backend and frontend from their respective folders.
+
 ## Backend Setup
 
 ```bash
