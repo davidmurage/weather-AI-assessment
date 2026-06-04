@@ -1,17 +1,29 @@
 import https from 'node:https'
 
-export async function getJson(url, headers = {}) {
+export async function getJson(url, headers = {}, options = {}) {
+  const timeoutMs = options.timeoutMs || 4000
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
   try {
-    const response = await fetch(url, { headers })
+    const response = await fetch(url, { headers, signal: controller.signal })
     const responseText = await response.text()
 
     return buildHttpResult(response.status, response.headers, responseText, response.ok)
   } catch (fetchError) {
-    return getJsonWithHttps(url, headers, fetchError)
+    if (fetchError.name === 'AbortError') {
+      const timeoutError = new Error(`Request timed out after ${timeoutMs}ms`)
+      timeoutError.code = 'ETIMEDOUT'
+      throw timeoutError
+    }
+
+    return getJsonWithHttps(url, headers, fetchError, timeoutMs)
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
-function getJsonWithHttps(url, headers, fetchError) {
+function getJsonWithHttps(url, headers, fetchError, timeoutMs) {
   return new Promise((resolve, reject) => {
     const request = https.get(url, { headers }, (response) => {
       let responseText = ''
@@ -27,6 +39,9 @@ function getJsonWithHttps(url, headers, fetchError) {
     request.on('error', (httpsError) => {
       httpsError.cause = fetchError.cause || fetchError
       reject(httpsError)
+    })
+    request.setTimeout(timeoutMs, () => {
+      request.destroy(new Error(`Request timed out after ${timeoutMs}ms`))
     })
     request.end()
   })

@@ -1,3 +1,4 @@
+import { env } from '../config/env.js'
 import { getJson } from './httpClient.js'
 
 export async function getFallbackForecast({ lat, lon, days = 7 }) {
@@ -35,7 +36,7 @@ export async function getFallbackForecast({ lat, lon, days = 7 }) {
     'sunset',
   ].join(','))
 
-  const response = await getJson(url)
+  const response = await getJson(url, {}, { timeoutMs: env.fallbackWeatherTimeoutMs })
 
   if (!response.ok) {
     const error = new Error(response.body.error || response.body.reason || 'Fallback weather request failed.')
@@ -45,70 +46,6 @@ export async function getFallbackForecast({ lat, lon, days = 7 }) {
   }
 
   return mapOpenMeteoToWeatherAi(response.body, { lat, lon })
-}
-
-export function getSampleForecast({ lat, lon, days = 7 }) {
-  const today = new Date()
-  const daily = Array.from({ length: Number(days) || 7 }).map((_, index) => {
-    const date = new Date(today)
-    date.setDate(today.getDate() + index)
-
-    return {
-      date: date.toISOString().slice(0, 10),
-      temp_min: 15 + (index % 3),
-      temp_max: 24 + (index % 4),
-      precipitation_sum: index % 2 ? 1.2 : 3.4,
-      precipitation_probability: index % 2 ? 42 : 68,
-      condition_code: index % 2 ? 51 : 3,
-      wind_max: 10 + index,
-    }
-  })
-  const hourly = Array.from({ length: 24 }).map((_, index) => {
-    const time = new Date(today)
-    time.setHours(today.getHours() + index, 0, 0, 0)
-
-    return {
-      time: time.toISOString(),
-      temperature: 16 + (index % 9),
-      humidity: 82 - (index % 25),
-      feels_like: 17 + (index % 8),
-      precipitation_probability: 35 + (index % 45),
-      condition_code: index % 3 ? 3 : 51,
-      wind_speed: 5 + (index % 8),
-      wind_gust: 12 + (index % 16),
-      uv_index: index > 6 && index < 18 ? 3 + (index % 5) : 0,
-    }
-  })
-
-  return {
-    data: {
-      source: 'sample-fallback',
-      location: {
-        lat,
-        lon,
-        requested_lat: lat,
-        requested_lon: lon,
-        timezone: 'Africa/Nairobi',
-      },
-      current: {
-        time: hourly[0].time,
-        temperature: hourly[0].temperature,
-        humidity: hourly[0].humidity,
-        feels_like: hourly[0].feels_like,
-        condition_code: hourly[0].condition_code,
-        wind_speed: hourly[0].wind_speed,
-        wind_gust: hourly[0].wind_gust,
-        precipitation_probability: hourly[0].precipitation_probability,
-        uv_index: hourly[0].uv_index,
-      },
-      hourly,
-      daily,
-    },
-    fallback: {
-      source: 'sample',
-      reason: 'Weather-AI and the fallback live provider were unavailable, so sample data was returned to keep the dashboard usable.',
-    },
-  }
 }
 
 function mapOpenMeteoToWeatherAi(data, requestedLocation) {

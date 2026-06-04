@@ -15,7 +15,7 @@ export async function getWeather(place) {
     lat: place.lat,
     lon: place.lon,
     days: '7',
-    ai: 'true',
+    ai: 'false',
     units: 'metric',
   })
 

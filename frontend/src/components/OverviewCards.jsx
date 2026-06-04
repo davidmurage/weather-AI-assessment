@@ -1,6 +1,9 @@
 import { formatPercent, formatSpeed, formatTemp } from '../utils/weather'
 
 function OverviewCards({ currentDate, place, rateRemaining, weather }) {
+  const sourceLabel =
+    weather?.raw?.source === 'open-meteo-fallback' ? 'Live fallback provider' : 'Weather-AI'
+
   return (
     <section className="overview-grid" aria-live="polite">
       <article className="current-card">
@@ -47,6 +50,10 @@ function OverviewCards({ currentDate, place, rateRemaining, weather }) {
             <dt>API quota</dt>
             <dd>{rateRemaining ? `${rateRemaining} left` : 'Connected'}</dd>
           </div>
+          <div>
+            <dt>Data source</dt>
+            <dd>{sourceLabel}</dd>
+          </div>
         </dl>
       </article>
 
@@ -54,7 +61,7 @@ function OverviewCards({ currentDate, place, rateRemaining, weather }) {
         <p className="eyebrow">AI Summary</p>
         <p>
           {weather?.summary ||
-            'AI summaries are requested with ai=true. Add your Weather-AI key to the backend environment to enable live output.'}
+            'Live forecast data is requested from Weather-AI. When an AI summary is not returned, the app generates a readable local summary.'}
         </p>
       </article>
     </section>

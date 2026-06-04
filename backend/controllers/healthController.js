@@ -8,6 +8,11 @@ export function getHealth(_req, res) {
       hasWeatherApiKey: Boolean(env.weatherApiKey),
       weatherBaseUrl: env.weatherBaseUrl,
       frontendOrigins: env.frontendOrigins,
+      timeouts: {
+        weatherAiTimeoutMs: env.weatherAiTimeoutMs,
+        fallbackWeatherTimeoutMs: env.fallbackWeatherTimeoutMs,
+        geocodingTimeoutMs: env.geocodingTimeoutMs,
+      },
     },
   })
 }
