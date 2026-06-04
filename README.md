@@ -65,7 +65,7 @@ Backend deployment variables:
 ```env
 WEATHER_AI_API_KEY=wai_your_key_here
 WEATHER_AI_BASE_URL=https://api.weather-ai.co
-FRONTEND_ORIGIN=https://your-frontend-domain.example
+FRONTEND_ORIGIN=https://weather-ai-assessment.vercel.app
 ```
 
 Frontend deployment variable:
@@ -75,6 +75,12 @@ VITE_API_BASE_URL=https://your-backend-domain.example
 ```
 
 Deploy the backend to Render or Railway, then deploy the frontend to Netlify or Vercel with the backend URL set as `VITE_API_BASE_URL`.
+
+If you need multiple allowed frontend origins, separate them with commas:
+
+```env
+FRONTEND_ORIGIN=http://localhost:5173,https://weather-ai-assessment.vercel.app
+```
 
 ## API Routes
 
