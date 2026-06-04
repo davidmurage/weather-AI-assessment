@@ -83,10 +83,17 @@ function normalizeDailyObjects(daily) {
   }))
 }
 
-function normalizeHourlyObjects(hourly) {
+function normalizeHourlyObjects(hourly, currentTime) {
   if (!Array.isArray(hourly)) return []
 
-  return hourly.slice(0, 8).map((hour) => ({
+  const currentTimestamp = currentTime ? new Date(currentTime).getTime() : Date.now()
+  const upcomingHours = hourly.filter((hour) => {
+    const hourTimestamp = new Date(hour.time).getTime()
+    return Number.isFinite(hourTimestamp) && hourTimestamp >= currentTimestamp
+  })
+  const visibleHours = upcomingHours.length ? upcomingHours : hourly
+
+  return visibleHours.slice(0, 8).map((hour) => ({
     time: hour.time,
     temp: firstValue(hour.temperature, hour.temperature_2m, hour.temp),
     condition: conditionLabel(firstValue(hour.condition, hour.condition_code, hour.weathercode, hour.weather_code)),
@@ -95,7 +102,27 @@ function normalizeHourlyObjects(hourly) {
     feelsLike: hour.feels_like,
     precipitationProbability: hour.precipitation_probability,
     wind: hour.wind_speed,
+    windGust: hour.wind_gust,
+    uvIndex: hour.uv_index,
   }))
+}
+
+function findNearestHourly(hourly, currentTime) {
+  if (!Array.isArray(hourly) || !hourly.length) return null
+
+  const currentTimestamp = currentTime ? new Date(currentTime).getTime() : Date.now()
+  if (!Number.isFinite(currentTimestamp)) return hourly[0]
+
+  return hourly.reduce((nearest, hour) => {
+    const hourTimestamp = new Date(hour.time).getTime()
+    const nearestTimestamp = new Date(nearest.time).getTime()
+
+    if (!Number.isFinite(hourTimestamp)) return nearest
+
+    return Math.abs(hourTimestamp - currentTimestamp) < Math.abs(nearestTimestamp - currentTimestamp)
+      ? hour
+      : nearest
+  }, hourly[0])
 }
 
 export function normalizeWeather(payload, fallbackPlace) {
@@ -120,8 +147,9 @@ export function normalizeWeather(payload, fallbackPlace) {
         low: minTemps[index],
         condition: conditionLabel(dailyCodes[index] ?? daily.conditions?.[index]),
       }))
+  const nearestHourly = findNearestHourly(data.hourly, current.time)
   const normalizedHourly = Array.isArray(data.hourly)
-    ? normalizeHourlyObjects(data.hourly)
+    ? normalizeHourlyObjects(data.hourly, current.time)
     : hourlyTimes.slice(0, 8).map((time, index) => ({
         time,
         temp: hourlyTemps[index],
@@ -130,13 +158,13 @@ export function normalizeWeather(payload, fallbackPlace) {
   const normalizedCurrent = {
     temperature: firstValue(current.temperature, current.temperature_2m, current.temp, data.temperature),
     condition: conditionLabel(firstValue(current.condition, current.condition_code, current.weathercode, current.weather_code)),
-    humidity: firstValue(current.humidity, current.relative_humidity_2m, current.relativeHumidity),
+    humidity: firstValue(current.humidity, current.relative_humidity_2m, current.relativeHumidity, nearestHourly?.humidity),
     wind: firstValue(current.wind_speed, current.windspeed, current.wind_speed_10m, current.windSpeed),
-    feelsLike: firstValue(current.feels_like, current.apparent_temperature),
-    uvIndex: current.uv_index,
-    windGust: current.wind_gust,
+    feelsLike: firstValue(current.feels_like, current.apparent_temperature, nearestHourly?.feels_like),
+    uvIndex: firstValue(current.uv_index, nearestHourly?.uv_index),
+    windGust: firstValue(current.wind_gust, nearestHourly?.wind_gust),
     icon: current.icon,
-    precipitationProbability: current.precipitation_probability,
+    precipitationProbability: firstValue(current.precipitation_probability, nearestHourly?.precipitation_probability),
   }
 
   return {
