@@ -1,10 +1,10 @@
 import { BASE_URL } from '../config'
 
 async function parseResponse(response, fallbackMessage) {
-  const payload = await response.json()
+  const payload = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(payload.error || fallbackMessage)
+    throw new Error(payload.error || payload.message || fallbackMessage)
   }
 
   return payload
